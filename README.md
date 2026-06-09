@@ -1,42 +1,44 @@
-<div align="center">
+# Türkçe Özel İsim Tanıma (NER) - Web Uygulaması
 
-# 🇹🇷 Türkçe Özel İsim Tanıma (NER)
+Bu proje, doğal dil işleme alanında geliştirilmiş, Türkçe metinler üzerindeki özel isimleri (Named Entity Recognition - NER) yüksek isabet oranıyla tespit eden Flask tabanlı bir web uygulamasıdır. 
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?style=flat-square&logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-2.3%2B-000000?style=flat-square&logo=flask&logoColor=white)
-![HuggingFace](https://img.shields.io/badge/🤗-BERT_Turkish_NER-FFD21E?style=flat-square)
+Derin öğrenme destekli güçlü bir dil modeli ve **Türk Dil Kurumu (TDK) yazım kurallarını** temel alan gelişmiş bir filtreleme altyapısı sayesinde, makine öğrenmesinin kaçırdığı veya yanlış etiketlediği kelimeler mantıksal kurallarla düzeltilir.
 
-> 🎓 Doğal Dil İşleme Dersi — Yusuf Talha Alişan (210260027)
+## 🚀 Son Güncellemeler ve Yenilikler (V2)
 
-</div>
+1. **Genişletilmiş Etiket Sistemi (19 Kategori)**
+   - Sadece Kişi, Kurum, Yer değil; Millet, Unvan, Dil, Para Birimi, Kanun/Tüzük, Eser Adı gibi 19 farklı ince etiket eklendi.
+   - `girayyagmur/bert-base-turkish-ner-cased` (Turkish WikiNER) modeli kullanıldı.
+2. **Akıllı Subword Birleştirme**
+   - Yapay zekanın "Kâzım" ("Kâ" + "##zım") veya "Hopa" ("Hop" + "##a") gibi kelimeleri parçalaması sonucu oluşan hatalar giderildi.
+3. **TDK Kurallarıyla Gelişmiş Post-Processing**
+   - **Gezegenler:** Güneş, Dünya, Ay kelimeleri bağlam (uzay, yörünge vb.) analiz edilerek doğru sınıflandırılır.
+   - **Müzikal Roller:** "Vokal", "gitar", "bas gitar" gibi unvan sanılan kelimeler TDK kuralları gereği elenir.
+   - **Anlam Kayması:** Amper, jul, allahlık, donkişotluk gibi anlam kaymasına uğramış özel kelimelerin etiketleri kaldırılır.
+4. **Müzik Grupları ve Müzik Türleri Algoritması**
+   - Modelin eğitim verisinde bulunmayan Rock, Grunge, Arabesk, Halk müziği gibi akım ve türler büyük harfle başladıklarında özel isim sayılarak **Sanat/Müzik Türü (TÜR)** olarak tespit edilir.
+   - Modelin "Kişi" sandığı müzik grupları (Örn: Duman), devamında "grubu, rock, müzik" geçiyorsa otomatik olarak **Kurum (ORG)** olarak düzeltilir.
+5. **Kapsamlı Skor Optimizasyonu**
+   - Az bilinen isimlerin "Düşük Güven Skoru" nedeniyle yok sayılmasını önlemek için filtreler kaldırıldı; yanlış etiketlemeler sadece TDK dil bilgisi algoritmasıyla yönetildi.
 
-Türkçe metinlerdeki **kişi (PER)**, **yer (LOC)** ve **kurum (ORG)** adlarını [`savasy/bert-base-turkish-ner-cased`](https://huggingface.co/savasy/bert-base-turkish-ner-cased) BERT modeliyle otomatik tanıyan Flask web uygulaması.
+## 🛠️ Kurulum ve Çalıştırma
 
-## 🚀 Çalıştırma
+1. Gerekli kütüphaneleri yükleyin:
+   ```bash
+   pip install flask transformers torch numpy
+   ```
+2. Uygulamayı başlatın:
+   ```bash
+   python app.py
+   ```
+3. Tarayıcınızda otomatik olarak açılacaktır (veya `http://127.0.0.1:5000` adresine gidebilirsiniz).
+   *İlk çalıştırmada yapay zeka modeli (yaklaşık 400 MB) otomatik olarak indirilecektir.*
 
-**Windows:** `calistir.bat` dosyasına çift tıklayın — bağımlılıklar otomatik kurulur, tarayıcı açılır.
+## 💻 Kullanılan Teknolojiler
+- **Backend:** Python, Flask, HuggingFace Transformers
+- **Model:** BERT (BertForTokenClassification)
+- **Frontend:** HTML5, CSS3 (Modern, karanlık tema, cam efekti), Vanilla JS
 
-**Manuel:**
-```bash
-pip install -r requirements.txt
-python app.py
-# → http://localhost:5000
-```
-
-> İlk çalıştırmada model HuggingFace'den otomatik indirilir (~400 MB).
-
-## 📁 Yapı
-
-```
-├── app.py              ← Flask backend + NER pipeline
-├── requirements.txt
-├── calistir.bat        ← Çift tıkla başlatıcı (Windows)
-└── templates/
-    └── index.html      ← Web arayüzü
-```
-
-## 🛠️ Teknolojiler
-
-- **Model:** BERT fine-tuned (Türkçe NER)
-- **Backend:** Python · Flask
-- **Frontend:** HTML · CSS · Vanilla JS
+## 📝 Yazar
+- **Öğrenci:** Yusuf Talha Alişan (210260027)
+- **Ders:** Doğal Dil İşleme
