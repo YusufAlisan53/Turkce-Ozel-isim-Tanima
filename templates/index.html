@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Türkçe Özel İsim Tanıma | NLP Projesi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3250;
+    --text:#e2e8f0;--muted:#64748b;
+    --per:#a78bfa;--per-bg:#a78bfa18;
+    --loc:#34d399;--loc-bg:#34d39918;
+    --org:#fb923c;--org-bg:#fb923c18;
+    --misc:#60a5fa;--misc-bg:#60a5fa18;
+    --accent:#6366f1;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;padding:2rem 1rem}
+  h1{font-size:1.8rem;font-weight:700;background:linear-gradient(135deg,#a78bfa,#6366f1,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .subtitle{color:var(--muted);font-size:.85rem;margin-top:.3rem}
+  header{text-align:center;margin-bottom:2rem}
+  .meta{font-size:.75rem;color:var(--muted);margin-top:.5rem}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:1.5rem}
+
+  textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Inter',sans-serif;font-size:.95rem;line-height:1.6;padding:1rem;resize:vertical;min-height:160px;outline:none;transition:border-color .2s}
+  textarea:focus{border-color:var(--accent)}
+  textarea::placeholder{color:var(--muted)}
+
+  .btn{display:inline-flex;align-items:center;gap:.5rem;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;border-radius:10px;padding:.75rem 1.8rem;font-size:.95rem;font-weight:600;cursor:pointer;transition:transform .15s,box-shadow .15s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 25px #6366f150}
+  .btn:active{transform:translateY(0)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+  .btn-row{display:flex;gap:.75rem;align-items:center;margin-top:1rem;flex-wrap:wrap}
+  .btn-clear{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:.75rem 1.2rem;font-size:.9rem;cursor:pointer;transition:color .2s,border-color .2s}
+  .btn-clear:hover{color:var(--text);border-color:var(--muted)}
+
+  .legend{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
+  .badge{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .75rem;border-radius:999px;font-size:.8rem;font-weight:600}
+  .badge-per{background:var(--per-bg);color:var(--per);border:1px solid var(--per)40}
+  .badge-loc{background:var(--loc-bg);color:var(--loc);border:1px solid var(--loc)40}
+  .badge-org{background:var(--org-bg);color:var(--org);border:1px solid var(--org)40}
+  .badge-misc{background:var(--misc-bg);color:var(--misc);border:1px solid var(--misc)40}
+
+  #result-box{display:none}
+  #highlighted-text{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.2rem;line-height:2;font-size:.95rem}
+
+  .ent{border-radius:4px;padding:1px 4px;cursor:default;position:relative;font-weight:500}
+  .ent-per{background:var(--per-bg);color:var(--per)}
+  .ent-loc{background:var(--loc-bg);color:var(--loc)}
+  .ent-org{background:var(--org-bg);color:var(--org)}
+  .ent-misc{background:var(--misc-bg);color:var(--misc)}
+  .ent sup{font-size:.6rem;opacity:.7;margin-left:2px}
+
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:1rem;margin-top:1rem}
+  .stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center}
+  .stat-num{font-size:1.8rem;font-weight:700}
+  .stat-label{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+
+  .entity-list{margin-top:1rem;display:flex;flex-direction:column;gap:.5rem}
+  .ent-row{display:flex;justify-content:space-between;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.6rem 1rem;font-size:.88rem}
+  .ent-word{font-weight:600}
+  .ent-meta{display:flex;gap:.5rem;align-items:center}
+  .score{color:var(--muted);font-size:.78rem}
+
+  #spinner{display:none;width:20px;height:20px;border:3px solid #ffffff30;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  #error-msg{display:none;color:#f87171;background:#f8717115;border:1px solid #f8717130;border-radius:8px;padding:.75rem 1rem;margin-top:.75rem;font-size:.88rem}
+
+  .container{max-width:800px;margin:0 auto}
+  .section-title{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.75rem}
+
+  .char-count{font-size:.75rem;color:var(--muted);text-align:right;margin-top:.3rem}
+
+  .sample-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem}
+  .sample-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:.3rem .7rem;font-size:.78rem;cursor:pointer;transition:color .2s,border-color .2s}
+  .sample-btn:hover{color:var(--text);border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>🔍 Türkçe Özel İsim Tanıma</h1>
+    <p class="subtitle">Named Entity Recognition · BERT Tabanlı Türkçe NER Modeli</p>
+    <p class="meta">Doğal Dil İşleme Dersi Projesi &nbsp;|&nbsp; Yusuf Talha Alişan – 210260027</p>
+  </header>
+
+  <!-- Input -->
+  <div class="card">
+    <p class="section-title">Örnek Metinler</p>
+    <div class="sample-btns">
+      <button class="sample-btn" onclick="loadSample(0)">📰 Haber</button>
+      <button class="sample-btn" onclick="loadSample(1)">🌍 Coğrafya</button>
+      <button class="sample-btn" onclick="loadSample(2)">🏛️ Tarih</button>
+      <button class="sample-btn" onclick="loadSample(3)">⚽ Spor</button>
+    </div>
+
+    <p class="section-title">Metin Girin</p>
+    <textarea id="input-text" placeholder="Analiz edilecek Türkçe metni buraya yazın veya yapıştırın…" oninput="updateCount()"></textarea>
+    <div class="char-count"><span id="char-count">0</span> / 5000 karakter</div>
+
+    <div class="btn-row">
+      <button class="btn" id="analyze-btn" onclick="analyze()">
+        <div id="spinner"></div>
+        <span id="btn-text">Analiz Et</span>
+      </button>
+      <button class="btn-clear" onclick="clearAll()">Temizle</button>
+    </div>
+    <div id="error-msg"></div>
+  </div>
+
+  <!-- Legend -->
+  <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1rem">
+    <span class="badge badge-per">👤 Kişi (PER)</span>
+    <span class="badge badge-loc">📍 Yer (LOC)</span>
+    <span class="badge badge-org">🏢 Kurum (ORG)</span>
+    <span class="badge badge-misc">🔷 Diğer (MISC)</span>
+  </div>
+
+  <!-- Results -->
+  <div id="result-box">
+    <div class="card">
+      <p class="section-title">Vurgulanan Metin</p>
+      <div id="highlighted-text"></div>
+    </div>
+
+    <div class="card">
+      <p class="section-title">İstatistikler</p>
+      <div class="stats-grid" id="stats-grid"></div>
+    </div>
+
+    <div class="card">
+      <p class="section-title">Bulunan Varlıklar</p>
+      <div class="entity-list" id="entity-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SAMPLES = [
+  `Cumhurbaşkanı Recep Tayyip Erdoğan, Ankara'da düzenlenen zirveye katılmak üzere Almanya'ya gitti. Alman Başbakanı Olaf Scholz ile görüşen Erdoğan, NATO ve Türkiye-AB ilişkilerini ele aldı. Toplantıya Dışişleri Bakanı Hakan Fidan da eşlik etti.`,
+  `İstanbul Boğazı, Avrupa ile Asya'yı birbirinden ayırır. Karadeniz'i Marmara Denizi'ne bağlayan bu su yolu, Türkiye'nin en önemli coğrafi özelliklerinden biridir. İzmir, Bursa ve Antalya gibi büyük şehirler Ege ve Akdeniz kıyılarında konumlanmıştır.`,
+  `Atatürk, 29 Ekim 1923'te Türkiye Cumhuriyeti'ni ilan etti. Ankara başkent seçildi. İsmet İnönü ise Türkiye'nin ilk Başbakanı olarak görev yaptı. Kurtuluş Savaşı sırasında Türk Büyük Millet Meclisi önemli kararlar aldı.`,
+  `Galatasaray, Şampiyonlar Ligi'nde Manchester United'ı 3-2 mağlup etti. Maçta Mauro Icardi iki gol atarken takım kaptanı Kerem Aktürkoğlu da bir gol kaydetti. Karşılaşma Old Trafford Stadyumu'nda oynandı.`
+];
+
+function loadSample(i){
+  document.getElementById('input-text').value = SAMPLES[i];
+  updateCount();
+}
+
+function updateCount(){
+  const len = document.getElementById('input-text').value.length;
+  document.getElementById('char-count').textContent = len;
+}
+
+function setLoading(v){
+  document.getElementById('analyze-btn').disabled = v;
+  document.getElementById('spinner').style.display = v ? 'block' : 'none';
+  document.getElementById('btn-text').textContent = v ? 'Analiz ediliyor…' : 'Analiz Et';
+}
+
+function showError(msg){
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function clearAll(){
+  document.getElementById('input-text').value = '';
+  document.getElementById('char-count').textContent = '0';
+  document.getElementById('result-box').style.display = 'none';
+  document.getElementById('error-msg').style.display = 'none';
+}
+
+function labelClass(label){
+  const m={PER:'per',LOC:'loc',ORG:'org',MISC:'misc'};
+  return m[label]||'misc';
+}
+
+function buildHighlighted(text, entities){
+  let html='', cursor=0;
+  for(const e of entities){
+    if(e.start > cursor) html += escHtml(text.slice(cursor, e.start));
+    const cls = 'ent ent-'+labelClass(e.label);
+    html += `<span class="${cls}" title="${e.label_tr} · ${(e.score*100).toFixed(1)}%">${escHtml(e.word)}<sup>${e.label_tr}</sup></span>`;
+    cursor = e.end;
+  }
+  if(cursor < text.length) html += escHtml(text.slice(cursor));
+  return html;
+}
+
+function escHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildStats(stats, total){
+  const colorMap={Kişi:'var(--per)',Yer:'var(--loc)',Kurum:'var(--org)',Diğer:'var(--misc)'};
+  let html=`<div class="stat-card"><div class="stat-num" style="color:var(--accent)">${total}</div><div class="stat-label">Toplam</div></div>`;
+  for(const [k,v] of Object.entries(stats)){
+    const c=colorMap[k]||'var(--text)';
+    html+=`<div class="stat-card"><div class="stat-num" style="color:${c}">${v}</div><div class="stat-label">${k}</div></div>`;
+  }
+  return html;
+}
+
+function buildEntityList(entities){
+  const colorMap={PER:'var(--per)',LOC:'var(--loc)',ORG:'var(--org)',MISC:'var(--misc)'};
+  return entities.map(e=>`
+    <div class="ent-row">
+      <span class="ent-word" style="color:${colorMap[e.label]||'var(--text)'}">${escHtml(e.word)}</span>
+      <span class="ent-meta">
+        <span class="badge badge-${labelClass(e.label)}">${e.label_tr}</span>
+        <span class="score">${(e.score*100).toFixed(1)}%</span>
+      </span>
+    </div>`).join('');
+}
+
+async function analyze(){
+  const text = document.getElementById('input-text').value.trim();
+  document.getElementById('error-msg').style.display='none';
+  if(!text){ showError('Lütfen analiz edilecek bir metin girin.'); return; }
+
+  setLoading(true);
+  try{
+    const res = await fetch('/analyze',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({text})
+    });
+    const data = await res.json();
+    if(!res.ok){ showError(data.error||'Sunucu hatası.'); return; }
+
+    document.getElementById('highlighted-text').innerHTML = buildHighlighted(data.text, data.entities);
+    document.getElementById('stats-grid').innerHTML = buildStats(data.stats, data.total);
+    document.getElementById('entity-list').innerHTML = data.entities.length
+      ? buildEntityList(data.entities)
+      : '<p style="color:var(--muted);font-size:.88rem">Hiç özel isim bulunamadı.</p>';
+
+    document.getElementById('result-box').style.display='block';
+    document.getElementById('result-box').scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(err){
+    showError('Sunucuya bağlanılamadı. Flask uygulamasının çalıştığından emin olun.');
+  } finally{
+    setLoading(false);
+  }
+}
+</script>
+</body>
+</html>
