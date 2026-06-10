@@ -4,6 +4,8 @@ Bu proje, doğal dil işleme alanında geliştirilmiş, Türkçe metinler üzeri
 
 Derin öğrenme destekli güçlü bir dil modeli ve **Türk Dil Kurumu (TDK) yazım kurallarını** temel alan gelişmiş bir filtreleme altyapısı sayesinde, makine öğrenmesinin kaçırdığı veya yanlış etiketlediği kelimeler mantıksal kurallarla düzeltilir.
 
+ ![Birinci Görsel](HKaS1fbWAAAFt8G.jpg)
+
 1. **Genişletilmiş Etiket Sistemi (19 Kategori)**
    - Sadece Kişi, Kurum, Yer değil; Millet, Unvan, Dil, Para Birimi, Kanun/Tüzük, Eser Adı gibi 19 farklı ince etiket eklendi.
    - `girayyagmur/bert-base-turkish-ner-cased` (Turkish WikiNER) modeli kullanıldı.
@@ -13,6 +15,8 @@ Derin öğrenme destekli güçlü bir dil modeli ve **Türk Dil Kurumu (TDK) yaz
    - **Gezegenler:** Güneş, Dünya, Ay kelimeleri bağlam (uzay, yörünge vb.) analiz edilerek doğru sınıflandırılır.
    - **Müzikal Roller:** "Vokal", "gitar", "bas gitar" gibi unvan sanılan kelimeler TDK kuralları gereği elenir.
    - **Anlam Kayması:** Amper, jul, allahlık, donkişotluk gibi anlam kaymasına uğramış özel kelimelerin etiketleri kaldırılır.
+
+   ![İkinci Görsel](HKaS42DXcAAhngQ.jpg)
 
 ## 🛠️ Kurulum ve Çalıştırma
 
