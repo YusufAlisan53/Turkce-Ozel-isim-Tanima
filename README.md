@@ -1,10 +1,8 @@
-# Türkçe Özel İsim Tanıma (NER) - Web Uygulaması
+# Türkçe Özel İsim Tanıma
 
 Bu proje, doğal dil işleme alanında geliştirilmiş, Türkçe metinler üzerindeki özel isimleri (Named Entity Recognition - NER) yüksek isabet oranıyla tespit eden Flask tabanlı bir web uygulamasıdır. 
 
 Derin öğrenme destekli güçlü bir dil modeli ve **Türk Dil Kurumu (TDK) yazım kurallarını** temel alan gelişmiş bir filtreleme altyapısı sayesinde, makine öğrenmesinin kaçırdığı veya yanlış etiketlediği kelimeler mantıksal kurallarla düzeltilir.
-
-## 🚀 Son Güncellemeler ve Yenilikler (V2)
 
 1. **Genişletilmiş Etiket Sistemi (19 Kategori)**
    - Sadece Kişi, Kurum, Yer değil; Millet, Unvan, Dil, Para Birimi, Kanun/Tüzük, Eser Adı gibi 19 farklı ince etiket eklendi.
@@ -15,11 +13,6 @@ Derin öğrenme destekli güçlü bir dil modeli ve **Türk Dil Kurumu (TDK) yaz
    - **Gezegenler:** Güneş, Dünya, Ay kelimeleri bağlam (uzay, yörünge vb.) analiz edilerek doğru sınıflandırılır.
    - **Müzikal Roller:** "Vokal", "gitar", "bas gitar" gibi unvan sanılan kelimeler TDK kuralları gereği elenir.
    - **Anlam Kayması:** Amper, jul, allahlık, donkişotluk gibi anlam kaymasına uğramış özel kelimelerin etiketleri kaldırılır.
-4. **Müzik Grupları ve Müzik Türleri Algoritması**
-   - Modelin eğitim verisinde bulunmayan Rock, Grunge, Arabesk, Halk müziği gibi akım ve türler büyük harfle başladıklarında özel isim sayılarak **Sanat/Müzik Türü (TÜR)** olarak tespit edilir.
-   - Modelin "Kişi" sandığı müzik grupları (Örn: Duman), devamında "grubu, rock, müzik" geçiyorsa otomatik olarak **Kurum (ORG)** olarak düzeltilir.
-5. **Kapsamlı Skor Optimizasyonu**
-   - Az bilinen isimlerin "Düşük Güven Skoru" nedeniyle yok sayılmasını önlemek için filtreler kaldırıldı; yanlış etiketlemeler sadece TDK dil bilgisi algoritmasıyla yönetildi.
 
 ## 🛠️ Kurulum ve Çalıştırma
 
@@ -36,9 +29,8 @@ Derin öğrenme destekli güçlü bir dil modeli ve **Türk Dil Kurumu (TDK) yaz
 
 ## 💻 Kullanılan Teknolojiler
 - **Backend:** Python, Flask, HuggingFace Transformers
-- **Model:** BERT (BertForTokenClassification)
-- **Frontend:** HTML5, CSS3 (Modern, karanlık tema, cam efekti), Vanilla JS
-
-## 📝 Yazar
+- **Model:** BERT
+- **Frontend:** HTML5, CSS3
+- 
 - **Öğrenci:** Yusuf Talha Alişan (210260027)
 - **Ders:** Doğal Dil İşleme
